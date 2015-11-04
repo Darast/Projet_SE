@@ -1,0 +1,48 @@
+$date
+   Today
+$end
+$version
+   VCD generator tool version info text.
+$end
+$comment
+	Normalization of a UART Value Change Dump
+$end
+$timescale 1ps $end
+$scope module logic $end
+$var wire 1 B Start $end
+$var wire 1 0 data0 $end
+$var wire 1 1 data1 $end
+$var wire 1 2 data2 $end
+$var wire 1 3 data3 $end
+$var wire 1 4 data4 $end
+$var wire 1 5 data5 $end
+$var wire 1 6 data6 $end
+$var wire 1 7 data7 $end
+$var wire 1 8 data8 $end
+$var wire 1 P data9 $end
+$var wire 1 E Stop $end
+
+$upscope $end
+$enddefinitions $end
+$dumpvars
+0 B
+0 0
+0 1
+1 2
+0 3
+0 4
+0 5
+0 6
+0 7
+0 8
+1 P
+1 E
+#0
+// Des changements 
+#2211
+// Des changements 
+#2296
+// Des changements 
+#2302
+// Des changements 
+#2303
