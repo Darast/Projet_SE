@@ -40,11 +40,11 @@ unsigned char USART_Receive( void )
 
 void Input_Init( void )
 {
-    DDRB =  (1<<DDB5)|(1<<DDB4)|(1<<DDB3)|(1<<DDB2)|(1<<DDB1)|(1<<DDB0); // Define input pins as NOT 5 to 0
-    PORTB = (1<<PB7)|(1<<PB6) // Assign pull-ups to pins 6 and 7
+    DDRD =  (1<<DDD5)|(1<<DDD4)|(1<<DDD3)|(1<<DDD2)|(1<<DDD1)|(1<<DDD0); // Define input pins as NOT 5 to 0
+    PORTD = (1<<PD7)|(1<<PD6); // Assign pull-ups to pins 6 and 7
 
-    inputpins[0] = PB6;
-    inputpins[1] = PB7;
+    inputpins[0] = PD6;
+    inputpins[1] = PD7;
 }
 
 unsigned char Read_Input( unsigned char block, int line )
@@ -71,24 +71,38 @@ void WriteLine( char* string, int size)
 
 int main() {
     USART_Init(MYUBRR);
+    Input_Init();
 
-    int curr_line; // Index of the current line
-    unsigned char data[nlines]; // Instant memory of the former read values
-    unsigned char newdata; // Data just read from one input line
-    unsigned char data_block; // Data read from all input lines at once
+    unsigned char old_data[nlines]; // Instant memory of the former read values
 
     while(1){
-        WriteLine("Reading data block", 18);
-        data_block = PINB; // Read every input lines' states
-        USART_Transmit(data_block);
 
-        for (curr_line = 0; curr_line < nlines; curr_line++){
-            newdata = Read_Input(data_block, curr_line); // Read the value on the corresponding input pin
+        // for (curr_line = 0; curr_line < nlines; curr_line++){
+        //     newdata = Read_Input(data_block, curr_line); // Read the value on the corresponding input pin
+        //     USART_Transmit(newdata + 50); // Transmit the new data
 
-            if (data[curr_line] != newdata){ // If the read value is different from the former one
-                data[curr_line] = newdata; // Update memory
-                USART_Transmit(newdata); // Transmit the new data
-            }
+            // if (data[curr_line] != newdata){ // If the read value is different from the former one
+            //     data[curr_line] = newdata; // Update memory
+            //     // USART_Transmit(newdata); // Transmit the new data
+            // }
+        // }       
+    
+        char pin6 = (PIND & _BV(PD6))!=0;
+        if(old_data[0] != pin6){
+            old_data[0] = pin6;
+            USART_Transmit('0'+pin6);
         }        
+
+        // Add space between values
+        USART_Transmit(' ');
+
+        char pin7 = (PIND & _BV(PD7))!=0;
+        if(old_data[1] != pin7){
+            old_data[1] = pin7;
+            USART_Transmit('0'+pin7);
+        }        
+        // Return and restart line
+        USART_Transmit('\r');
+        USART_Transmit('\n'); 
     }
 }
