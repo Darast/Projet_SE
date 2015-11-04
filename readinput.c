@@ -40,7 +40,8 @@ unsigned char USART_Receive( void )
 
 void Input_Init( void )
 {
-    DDRB =  (1<<DDB5)|(1<<DDB4)|(1<<DDB3)|(1<<DDB2)|(1<<DDB1)|(1<<DDB0);
+    DDRB =  (1<<DDB5)|(1<<DDB4)|(1<<DDB3)|(1<<DDB2)|(1<<DDB1)|(1<<DDB0); // Define input pins as NOT 5 to 0
+    PORTB = (1<<PB7)|(1<<PB6) // Assign pull-ups to pins 6 and 7
 
     inputpins[0] = PB6;
     inputpins[1] = PB7;
@@ -52,7 +53,21 @@ unsigned char Read_Input( unsigned char block, int line )
     //__no_operation();
     /* Read individual state of the given line */
     return block & _BV(inputpins[line]);
-};
+}
+
+void WriteLine( char* string, int size)
+{
+    int index = 0;
+
+    while (index < size)
+    {
+        USART_Transmit(string[index]);
+        index++;
+    }
+
+    USART_Transmit('\r'); // Retour chariot
+    USART_Transmit('\n'); // Descendre d'une ligne
+}
 
 int main() {
     USART_Init(MYUBRR);
@@ -63,8 +78,9 @@ int main() {
     unsigned char data_block; // Data read from all input lines at once
 
     while(1){
-
+        WriteLine("Reading data block", 18);
         data_block = PINB; // Read every input lines' states
+        USART_Transmit(data_block);
 
         for (curr_line = 0; curr_line < nlines; curr_line++){
             newdata = Read_Input(data_block, curr_line); // Read the value on the corresponding input pin
