@@ -1,4 +1,5 @@
 #include <avr/io.h>
+#include <avr/interrupt.h>
 
 #define FOSC 16000000 // Clock Speed
 #define BAUD 9600
@@ -69,9 +70,34 @@ void WriteLine( char* string, int size)
     USART_Transmit('\n'); // Descendre d'une ligne
 }
 
+void Interrupt_init(){
+    // SREG |= _BV(7);
+    sei();
+    // PCICR = _BV(PCIE2);
+    // PCMSK2 = _BV(PCINT22);  //PD6
+
+    PCICR = _BV(PCIE2);
+    PCMSK2 = _BV(PCINT23);  //PD7
+
+}
+
+ISR(PCINT2_vect){
+    char pin7 = (PIND & _BV(PD7))!=0;
+    char pin6 = (PIND & _BV(PD6))!=0;
+    
+    unsigned short oct = 0;
+    oct |= (pin7<<1) | (pin6<<0);
+    USART_Transmit(oct);
+
+    // USART_Transmit('\r');
+    // USART_Transmit('\n'); 
+        
+}
+
 int main() {
     USART_Init(MYUBRR);
     Input_Init();
+    Interrupt_init();
 
     unsigned char old_data[nlines]; // Instant memory of the former read values
 
@@ -87,22 +113,18 @@ int main() {
             // }
         // }       
     
-        char pin6 = (PIND & _BV(PD6))!=0;
-        if(old_data[0] != pin6){
-            old_data[0] = pin6;
-            USART_Transmit('0'+pin6);
-        }        
+                
 
         // Add space between values
-        USART_Transmit(' ');
+        //USART_Transmit(' ');
 
-        char pin7 = (PIND & _BV(PD7))!=0;
-        if(old_data[1] != pin7){
-            old_data[1] = pin7;
-            USART_Transmit('0'+pin7);
-        }        
+        // char pin7 = (PIND & _BV(PD7))!=0;
+        // if(old_data[1] != pin7){
+        //     old_data[1] = pin7;
+        //     USART_Transmit('0'+pin7);
+        // }        
         // Return and restart line
-        USART_Transmit('\r');
-        USART_Transmit('\n'); 
+        // USART_Transmit('\r');
+        // USART_Transmit('\n'); 
     }
 }
