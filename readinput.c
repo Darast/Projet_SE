@@ -70,6 +70,6 @@ int main() {
     //unsigned char old_data[nlines]; // Instant memory of the former read values
 
     while(1){
-        // Empty loop !
+        // Empty loop ! YEAAAH !
     }
 }
