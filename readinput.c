@@ -6,8 +6,25 @@
 #define MYUBRR FOSC/16/BAUD-1
 #define nlines 2 // Number of input lines
 
+#define _CLI cli
+
 int inputpins[nlines];
 int timer_count = 0;
+
+
+unsigned int TIM16_ReadTCNT1( void ){
+    unsigned char sreg;
+    unsigned int i;
+    /* Save global interrupt flag */
+    sreg = SREG;
+    /* Disable interrupts */
+    _CLI();
+    /* Read TCNT1 into i */
+    i = TCNT1;
+    /* Restore global interrupt flag */
+    SREG = sreg;
+    return i;
+}
 
 void USART_Init( unsigned int ubrr){
     /*Set baud rate */
@@ -57,7 +74,7 @@ ISR(PCINT2_vect){ // Pin Change Interruption
     char pin7 = (PIND & _BV(PD7))!=0; // Read states of each input pin
     char pin6 = (PIND & _BV(PD6))!=0;
 
-    unsigned int timestamp = TIM16_ReadTCNT1() + timer_count*10000;
+    unsigned long timestamp = ((unsigned long)TIM16_ReadTCNT1() + timer_count*10000);
     
     unsigned short t0 = timestamp & 0xFF000000;
     unsigned short t1 = timestamp & 0x00FF0000;
@@ -65,7 +82,7 @@ ISR(PCINT2_vect){ // Pin Change Interruption
     unsigned short t3 = timestamp & 0x000000FF;
 
     unsigned short oct = 0; // Concatenate as a byte
-    oct |= (pin7<<1) | (pin6<<0);3600*
+    oct |= (pin7<<1) | (pin6<<0);
 
     USART_Transmit(t0); 
     USART_Transmit(t1);  
@@ -77,20 +94,6 @@ ISR(PCINT2_vect){ // Pin Change Interruption
 
 ISR(TIMER1_COMPA_vect){
     ++timer_count;
-}
-
-unsigned int TIM16_ReadTCNT1( void ){
-    unsigned char sreg;
-    unsigned int i;
-    /* Save global interrupt flag */
-    sreg = SREG;
-    /* Disable interrupts */
-    _CLI();
-    /* Read TCNT1 into i */
-    i = TCNT1;
-    /* Restore global interrupt flag */
-    SREG = sreg;
-    return i;
 }
 
 int main() {
