@@ -66,13 +66,14 @@ void Interrupt_Init(){
     // SREG |= _BV(7); // Equivalent to sei()
 
     PCICR = _BV(PCIE2);     // Enable Pin Change Interrupt on Pin Change Mask 2
-    PCMSK2 = _BV(PCINT23);  // Choose PD7 as trigger for interrupt
+    PCMSK2 = 255; // Set interrupt on all D port 
+    // PCMSK2 = _BV(PCINT23);  // Choose PD7 as trigger for interrupt
     // PCMSK2 = _BV(PCINT22);  //PD6
 }
 
 ISR(PCINT2_vect){ // Pin Change Interruption
-    char pin7 = (PIND & _BV(PD7))!=0; // Read states of each input pin
-    char pin6 = (PIND & _BV(PD6))!=0;
+    // char pin7 = (PIND & _BV(PD7))!=0; // Read states of each input pin
+    // char pin6 = (PIND & _BV(PD6))!=0;
 
     unsigned long timestamp = ((unsigned long)TIM16_ReadTCNT1() + timer_count*10000);
     
@@ -81,8 +82,9 @@ ISR(PCINT2_vect){ // Pin Change Interruption
     unsigned short t2 = timestamp & 0x0000FF00;
     unsigned short t3 = timestamp & 0x000000FF;
 
-    unsigned short oct = 0; // Concatenate as a byte
-    oct |= (pin7<<1) | (pin6<<0);
+    unsigned short portD = 0; // Concatenate as a byte
+    // oct |= (pin7<<1) | (pin6<<0);
+    portD = PIND;
 
     USART_Transmit(t0); 
     USART_Transmit(t1);  
@@ -107,7 +109,7 @@ int main() {
     // Mode 4, CTC on OCR1A
     TIMSK1 |= (1 << OCIE1A);
     //Set interrupt on compare match
-    TCCR1B |= (1 << CS11); 
+    TCCR1B |= (1 << CS11);
     // set prescaler to 8 and start the timer
 
 
