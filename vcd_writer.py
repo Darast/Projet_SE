@@ -7,8 +7,8 @@ import sys
 vcd_file = open('acquired_data.vcd', 'w')
 
 portpath = '/dev/ttyACM0'
-baudrate = 9600
-serialport = serial.Serial(portpath, 9600)
+baudrate = 1e6
+serialport = serial.Serial(portpath, baudrate)
 
 if not serialport.isOpen():
 	serialport.open()
@@ -39,7 +39,7 @@ vcd_file.write('$upscope $end\n$enddefinitions $end\n')
 old_data = 0
 vcd_file.write('$dumpvars\n')
 for i in range(nlines):
-	vcd_file.write('0 '+ syms[i] + '\n')
+	vcd_file.write('0'+ syms[i] + '\n')
 
 # Scrutinize the data going through the serial port and write them down on the .vcd file
 first_byte = True
@@ -67,15 +67,10 @@ while(serialport.isOpen()):
 				curr_ibit = (curr_data & (1 << i) ) >> i # Extract the i-th bit from the current and old data bytes
 				old_ibit = (old_data & (1 << i) ) >> i
 				if curr_ibit != old_ibit:
-					vcd_file.write(str(curr_ibit) + ' ' + syms[i] + '\n')
+					vcd_file.write(str(curr_ibit) + syms[i] + '\n')
 
 			old_data = curr_data # Ultimately, update memory of previously received data
 			count += 1
-
-		# if(count > 500):
-		# 	vcd_file.write('#' + str(int(1e6 * (time.clock() - start))))
-		# 	vcd_file.close()
-		# 	break
 
 	except KeyboardInterrupt:
 		vcd_file.write('#' + str(int(1e6 * (time.clock() - start))))
@@ -83,8 +78,4 @@ while(serialport.isOpen()):
 		serialport.close()
 		quit()
 
-	# var = input();
-	# if(var == 'C'):
-	# 	vcd_file.write('#' + str(int(1e6 * (time.clock() - start))))
-	# 	vcd_file.close()
-	# 	return
+		

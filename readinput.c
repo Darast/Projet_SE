@@ -2,11 +2,12 @@
 #include <avr/interrupt.h>
 
 #define FOSC 16000000 // Clock Speed
-#define BAUD 9600
+#define BAUD 1000000
 #define MYUBRR FOSC/16/BAUD-1
 #define nlines 2 // Number of input lines
 
 int inputpins[nlines];
+int timer_count = 0;
 
 void USART_Init( unsigned int ubrr){
     /*Set baud rate */
@@ -55,11 +56,41 @@ void Interrupt_Init(){
 ISR(PCINT2_vect){ // Pin Change Interruption
     char pin7 = (PIND & _BV(PD7))!=0; // Read states of each input pin
     char pin6 = (PIND & _BV(PD6))!=0;
+
+    unsigned int timestamp = TIM16_ReadTCNT1() + timer_count*10000;
     
+    unsigned short t0 = timestamp & 0xFF000000;
+    unsigned short t1 = timestamp & 0x00FF0000;
+    unsigned short t2 = timestamp & 0x0000FF00;
+    unsigned short t3 = timestamp & 0x000000FF;
+
     unsigned short oct = 0; // Concatenate as a byte
-    oct |= (pin7<<1) | (pin6<<0);
+    oct |= (pin7<<1) | (pin6<<0);3600*
+
+    USART_Transmit(t0); 
+    USART_Transmit(t1);  
+    USART_Transmit(t2); 
+    USART_Transmit(t3); 
 
     USART_Transmit(oct); // Transmit data byte through serial port 
+}
+
+ISR(TIMER1_COMPA_vect){
+    ++timer_count;
+}
+
+unsigned int TIM16_ReadTCNT1( void ){
+    unsigned char sreg;
+    unsigned int i;
+    /* Save global interrupt flag */
+    sreg = SREG;
+    /* Disable interrupts */
+    _CLI();
+    /* Read TCNT1 into i */
+    i = TCNT1;
+    /* Restore global interrupt flag */
+    SREG = sreg;
+    return i;
 }
 
 int main() {
@@ -67,7 +98,15 @@ int main() {
     Input_Init();       // Set pins which will be considered as input
     Interrupt_Init();   // Set interruptions
 
-    //unsigned char old_data[nlines]; // Instant memory of the former read values
+    //Timer interrupt every 10000ms
+    OCR1A = 20000;
+    TCCR1B |= (1 << WGM12);
+    // Mode 4, CTC on OCR1A
+    TIMSK1 |= (1 << OCIE1A);
+    //Set interrupt on compare match
+    TCCR1B |= (1 << CS11); 
+    // set prescaler to 8 and start the timer
+
 
     while(1){
         // Empty loop ! YEAAAH !
