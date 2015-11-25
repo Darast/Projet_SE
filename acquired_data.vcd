@@ -1,0 +1,118 @@
+$date
+	Wed November 25 2015
+$end
+$timescale 1us $end
+$scope module logic $end
+$var wire 1 A databit $end
+$var wire 1 B clock $end
+$upscope $end
+$enddefinitions $end
+$dumpvars
+0 A
+0 B
+#0
+1 B
+1 A
+#35
+1 B
+#80
+0 B
+#212
+1 A
+1 B
+#385
+0 A
+0 B
+#486
+1 B
+#512
+0 B
+#533
+1 A
+1 B
+#689
+0 A
+0 B
+#770
+1 A
+1 B
+#906
+0 A
+0 B
+#972
+1 B
+#1107
+0 B
+#1173
+1 A
+1 B
+#1305
+0 A
+0 B
+#1372
+1 B
+#1395
+0 B
+#1416
+1 A
+1 B
+#1547
+0 A
+0 B
+#1629
+1 A
+1 B
+#1766
+0 A
+0 B
+#1834
+1 B
+#1978
+1 A
+0 B
+#2047
+1 B
+#2182
+0 A
+0 B
+#2286
+1 B
+#2309
+0 B
+#2328
+1 A
+1 B
+#2486
+0 A
+0 B
+#2567
+1 A
+1 B
+#2696
+0 A
+0 B
+#2762
+1 B
+#2784
+0 B
+#2807
+1 A
+1 B
+#2897
+0 A
+0 B
+#2973
+1 B
+#2996
+0 B
+#3008
+1 A
+1 B
+#3020
+0 A
+0 B
+#3074
+1 B
+#3095
+1 A
+#3242
