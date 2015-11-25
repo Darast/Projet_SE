@@ -47,31 +47,44 @@ start = 0
 count = 0
 
 while(serialport.isOpen()):
+	
+	try:
 
-	curr_data = serialport.read(1) # Read exactly one byte from the serial port buffer			
-	curr_data = ord(curr_data)
-	# print  curr_data
+		curr_data = serialport.read(1) # Read exactly one byte from the serial port buffer			
+		curr_data = ord(curr_data)
 
-	if (first_byte):
-		start = time.clock()
-		timediff = 0
-		first_byte = False
-	else:
-		 timediff = time.clock() - start
+		if (first_byte):
+			start = time.clock()
+			timediff = 0
+			first_byte = False
+		else:
+			 timediff = time.clock() - start
 
-	if (curr_data != old_data): # Check if the global data has changed
-		vcd_file.write('#' + str(int(1e6 * timediff)) + '\n')
+		if (curr_data != old_data): # Check if the global data has changed
+			vcd_file.write('#' + str(int(1e6 * timediff)) + '\n')
 
-		for i in range(nlines):
-			curr_ibit = (curr_data & (1 << i) ) >> i # Extract the i-th bit from the current and old data bytes
-			old_ibit = (old_data & (1 << i) ) >> i
-			if curr_ibit != old_ibit:
-				vcd_file.write(str(curr_ibit) + ' ' + syms[i] + '\n')
+			for i in range(nlines):
+				curr_ibit = (curr_data & (1 << i) ) >> i # Extract the i-th bit from the current and old data bytes
+				old_ibit = (old_data & (1 << i) ) >> i
+				if curr_ibit != old_ibit:
+					vcd_file.write(str(curr_ibit) + ' ' + syms[i] + '\n')
 
-		old_data = curr_data # Ultimately, update memory of previously received data
-		count += 1
+			old_data = curr_data # Ultimately, update memory of previously received data
+			count += 1
 
-	if(count > 500):
+		# if(count > 500):
+		# 	vcd_file.write('#' + str(int(1e6 * (time.clock() - start))))
+		# 	vcd_file.close()
+		# 	break
+
+	except KeyboardInterrupt:
 		vcd_file.write('#' + str(int(1e6 * (time.clock() - start))))
 		vcd_file.close()
-		break
+		serialport.close()
+		quit()
+
+	# var = input();
+	# if(var == 'C'):
+	# 	vcd_file.write('#' + str(int(1e6 * (time.clock() - start))))
+	# 	vcd_file.close()
+	# 	return
