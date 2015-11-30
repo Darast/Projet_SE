@@ -91,7 +91,7 @@ ISR(PCINT2_vect){ // Pin Change Interruption
     USART_Transmit(t2); 
     USART_Transmit(t3); 
 
-    USART_Transmit(oct); // Transmit data byte through serial port 
+    USART_Transmit(portD); // Transmit data byte through serial port 
 }
 
 ISR(TIMER1_COMPA_vect){
