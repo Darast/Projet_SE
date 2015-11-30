@@ -1,6 +1,5 @@
 import serial # Package needed to read data going through serial port
 
-import time   # Module needed to timestamp data
 import sys
 
 # Initialization phase
@@ -42,38 +41,28 @@ for i in range(nlines):
 	vcd_file.write('0'+ syms[i] + '\n')
 
 # Scrutinize the data going through the serial port and write them down on the .vcd file
-first_byte = True
-start = 0
-count = 0
-
 while(serialport.isOpen()):
 	
 	try:
 
-		curr_data = serialport.read(1) # Read exactly one byte from the serial port buffer			
-		curr_data = ord(curr_data)
+		curr_data = serialport.read(5) # Read exactly five bytes from the serial port buffer
+		print curr_data	# Should be a string
+		lines_data = ord(curr_data[4]) # Extract the byte corresponding to the lines values
+		timestamp = ord(curr_data[0]) + (ord(curr_data[1]) << 1) + (ord(curr_data[2]) << 2) + (ord(curr_data[3]) << 3)
 
-		if (first_byte):
-			start = time.clock()
-			timediff = 0
-			first_byte = False
-		else:
-			 timediff = time.clock() - start
-
-		if (curr_data != old_data): # Check if the global data has changed
-			vcd_file.write('#' + str(int(1e6 * timediff)) + '\n')
+		if (lines_data != old_data): # Check if the global data has changed
+			vcd_file.write('#' + str(timestamp) + '\n')
 
 			for i in range(nlines):
-				curr_ibit = (curr_data & (1 << i) ) >> i # Extract the i-th bit from the current and old data bytes
+				curr_ibit = (lines_data & (1 << i) ) >> i # Extract the i-th bit from the current and old data bytes
 				old_ibit = (old_data & (1 << i) ) >> i
-				if curr_ibit != old_ibit:
+				if curr_ibit != old_ibit: # Only print the values that have changed
 					vcd_file.write(str(curr_ibit) + syms[i] + '\n')
 
 			old_data = curr_data # Ultimately, update memory of previously received data
-			count += 1
 
 	except KeyboardInterrupt:
-		vcd_file.write('#' + str(int(1e6 * (time.clock() - start))))
+		vcd_file.write('#' + int(timestamp * 1.01)) # Rough way to put a final timestamp a bit later than the last timestamp
 		vcd_file.close()
 		serialport.close()
 		quit()
