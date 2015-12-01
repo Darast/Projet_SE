@@ -77,21 +77,21 @@ ISR(PCINT2_vect){ // Pin Change Interruption
 
     unsigned long timestamp = ((unsigned long)TIM16_ReadTCNT1() + timer_count*10000);
     
-    unsigned short t0 = timestamp & 0xFF000000;
-    unsigned short t1 = timestamp & 0x00FF0000;
-    unsigned short t2 = timestamp & 0x0000FF00;
-    unsigned short t3 = timestamp & 0x000000FF;
+    unsigned short t0 = (unsigned short) ((timestamp & 0xFF000000)>>24);
+    unsigned short t1 = (unsigned short) ((timestamp & 0x00FF0000)>>16);
+    unsigned short t2 = (unsigned short) ((timestamp & 0x0000FF00)>>8);
+    unsigned short t3 = (unsigned short) ((timestamp & 0x000000FF));
 
     unsigned short portD = 0; // Concatenate as a byte
     // oct |= (pin7<<1) | (pin6<<0);
     portD = PIND;
 
     USART_Transmit(t0); 
-    USART_Transmit(t1);  
+    USART_Transmit(t1); 
     USART_Transmit(t2); 
     USART_Transmit(t3); 
 
-    USART_Transmit(oct); // Transmit data byte through serial port 
+    USART_Transmit(portD); // Transmit data byte through serial port 
 }
 
 ISR(TIMER1_COMPA_vect){
