@@ -67,8 +67,8 @@ void Interrupt_Init(){
 
     PCICR = _BV(PCIE2);     // Enable Pin Change Interrupt on Pin Change Mask 2
     PCMSK2 = 255; // Set interrupt on all D port 
-    // PCMSK2 = _BV(PCINT23);  // Choose PD7 as trigger for interrupt
-    // PCMSK2 = _BV(PCINT22);  //PD6
+    PCMSK2 &= ~_BV(PCINT16); // Disable interrupt on pin 0 (Rx)  
+    PCMSK2 &= ~_BV(PCINT17); // Disable interrupt on pin 1 (Tx)
 }
 
 ISR(PCINT2_vect){ // Pin Change Interruption
@@ -105,11 +105,10 @@ int main() {
 
     //Timer interrupt every 10000ms
     OCR1A = 20000;
-    TCCR1B |= (1 << WGM12);
-    // Mode 4, CTC on OCR1A
-    TIMSK1 |= (1 << OCIE1A);
+    TIMSK1 |= _BV(OCIE1A);
     //Set interrupt on compare match
-    TCCR1B |= (1 << CS11);
+    TCCR1B = _BV(WGM12) | _BV(CS11);
+    // Mode 4, CTC on OCR1A
     // set prescaler to 8 and start the timer
 
 

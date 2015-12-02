@@ -49,20 +49,25 @@ while(serialport.isOpen()):
 
 		buff_data = serialport.read(5) # Read exactly five bytes from the serial port buffer
 		lines_data = ord(buff_data[4]) # Extract the byte corresponding to the lines values
-		timestamp = ord(buff_data[0]) + (ord(buff_data[1]) << 1) + (ord(buff_data[2]) << 2) + (ord(buff_data[3]) << 3)
-		print timestamp # @DEBUG
+		timestamp = ord(buff_data[3]) + (ord(buff_data[2]) << 8) + (ord(buff_data[1]) << 16) + (ord(buff_data[0]) << 24)
+		# print timestamp # @DEBUG
+		print ord(buff_data[0])
+		print ord(buff_data[1])
+		print ord(buff_data[2])
+		print ord(buff_data[3])
 
-		if (lines_data != old_data): # Check if the global data has changed
-			vcd_file.write('#' + str(timestamp) + '\n')
 
-			for l in range(nlines):
-				i = ilines[l]
-				curr_ibit = (lines_data & (1 << i) ) >> i # Extract the i-th bit from the current and old data bytes
-				old_ibit = (old_data & (1 << i) ) >> i
-				if curr_ibit != old_ibit: # Only print the values that have changed
-					vcd_file.write(str(curr_ibit) + syms[i] + '\n')
+		# if (lines_data != old_data): # Check if the global data has changed
+		# 	vcd_file.write('#' + str(timestamp) + '\n')
 
-			old_data = lines_data # Ultimately, update memory of previously received data
+		# 	for l in range(nlines):
+		# 		i = ilines[l]
+		# 		curr_ibit = (lines_data & (1 << i) ) >> i # Extract the i-th bit from the current and old data bytes
+		# 		old_ibit = (old_data & (1 << i) ) >> i
+		# 		if curr_ibit != old_ibit: # Only print the values that have changed
+		# 			vcd_file.write(str(curr_ibit) + syms[i] + '\n')
+
+		# 	old_data = lines_data # Ultimately, update memory of previously received data
 
 	except KeyboardInterrupt:
 		vcd_file.write('#' + str( int(timestamp * 1.01) ) ) # Rough way to put a final timestamp a bit later than the last timestamp
