@@ -9,7 +9,7 @@
 #define _CLI cli
 
 int inputpins[nlines];
-int timer_count = 0;
+unsigned long timer_count = 0;
 
 
 unsigned int TIM16_ReadTCNT1( void ){
@@ -75,7 +75,7 @@ ISR(PCINT2_vect){ // Pin Change Interruption
     // char pin7 = (PIND & _BV(PD7))!=0; // Read states of each input pin
     // char pin6 = (PIND & _BV(PD6))!=0;
 
-    unsigned long timestamp = ((unsigned long)TIM16_ReadTCNT1() + timer_count*10000);
+    unsigned long timestamp = ((unsigned long)TIM16_ReadTCNT1()/2 + timer_count*10000);
     
     unsigned short t0 = (unsigned short) ((timestamp & 0xFF000000)>>24);
     unsigned short t1 = (unsigned short) ((timestamp & 0x00FF0000)>>16);
@@ -84,7 +84,7 @@ ISR(PCINT2_vect){ // Pin Change Interruption
 
     unsigned short portD = 0; // Concatenate as a byte
     // oct |= (pin7<<1) | (pin6<<0);
-    portD = PIND;
+    portD = PIND & 0xFC;
 
     USART_Transmit(t0); 
     USART_Transmit(t1); 
@@ -96,6 +96,20 @@ ISR(PCINT2_vect){ // Pin Change Interruption
 
 ISR(TIMER1_COMPA_vect){
     ++timer_count;
+
+
+    // unsigned long timestamp = ((unsigned long)TIM16_ReadTCNT1()/2 + timer_count*10000);
+
+    // unsigned short t0 = (unsigned short) ((timestamp & 0xFF000000)>>24);
+    // unsigned short t1 = (unsigned short) ((timestamp & 0x00FF0000)>>16);
+    // unsigned short t2 = (unsigned short) ((timestamp & 0x0000FF00)>>8);
+    // unsigned short t3 = (unsigned short) ((timestamp & 0x000000FF));
+
+    // USART_Transmit(t0); 
+    // USART_Transmit(t1); 
+    // USART_Transmit(t2); 
+    // USART_Transmit(t3);
+
 }
 
 int main() {

@@ -1,0 +1,13 @@
+$date
+	Wed December 02 2015
+$end
+$timescale 1us $end
+$scope module logic $end
+$var wire 1 A databit $end
+$var wire 1 B clock $end
+$upscope $end
+$enddefinitions $end
+$dumpvars
+0A
+0B
+#31586676
