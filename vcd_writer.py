@@ -50,6 +50,8 @@ state = -2 # State variable
 # nbytes: checksum
 data = [0]*nbytes
 
+print "Ready to read serial port flow"
+
 # Scrutinize the data going through the serial port and write them down on the .vcd file
 while(serialport.isOpen()):
 	
@@ -72,20 +74,23 @@ while(serialport.isOpen()):
 		elif state == nbytes: # Checksum
 			if buff == csum % 256:
 				data_ok = True
+				state = -2
 		
 		if data_ok: # If read data bytes are correct according to headers and checksum
 			lines_data = data[4] # Extract the byte corresponding to the lines values
 			timestamp = data[3] + (data[2] << 8) + (data[1] << 16) + (data[0] << 24)
+			print lines_data
+			print timestamp
 
 			if (lines_data != old_data): # Check if the global data has changed
 				vcd_file.write('#' + str(timestamp) + '\n')
 
-				for l in range(nlines):
-					i = ilines[l]
+				for l in range(nlines):		#l : line number
+					i = ilines[l]			#i : bit place in data byte
 					curr_ibit = (lines_data & (1 << i) ) >> i # Extract the i-th bit from the current and old data bytes
 					old_ibit = (old_data & (1 << i) ) >> i
 					if curr_ibit != old_ibit: # Only print the values that have changed
-						vcd_file.write(str(curr_ibit) + syms[i] + '\n')
+						vcd_file.write(str(curr_ibit) + syms[l] + '\n')
 
 				old_data = lines_data # Ultimately, update memory of previously received data
 

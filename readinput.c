@@ -55,7 +55,6 @@ unsigned char USART_Receive( void ){
 
 void Input_Init( void ){
     DDRD =  (1<<DDD5)|(1<<DDD4)|(1<<DDD3)|(1<<DDD2)|(1<<DDD1)|(1<<DDD0); // Define input pins as NOT 5 to 0
-    PORTD = (1<<PD7)|(1<<PD6);  // Assign pull-ups to pins 6 and 7
 
     inputpins[0] = PD6;
     inputpins[1] = PD7;
