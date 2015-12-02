@@ -50,7 +50,7 @@ while(serialport.isOpen()):
 		buff_data = serialport.read(5) # Read exactly five bytes from the serial port buffer
 		lines_data = ord(buff_data[4]) # Extract the byte corresponding to the lines values
 		timestamp = ord(buff_data[3]) + (ord(buff_data[2]) << 8) + (ord(buff_data[1]) << 16) + (ord(buff_data[0]) << 24)
-		# print timestamp # @DEBUG
+		print timestamp # @DEBUG
 
 		if (lines_data != old_data): # Check if the global data has changed
 			vcd_file.write('#' + str(timestamp) + '\n')
