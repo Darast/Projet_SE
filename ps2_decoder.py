@@ -45,7 +45,7 @@ def extract_from_vcd(filename):
 	extracted_bytes = []
 
 	for (t, ck) in ck_values:
-		if ck == '0' and ck_count > 0: # If the value considered is a clock tick (skip default starting zero)
+		if ck == '1' and ck_count > 0: # If the value considered is a clock tick (skip default starting value)
 			ck_real += 1
 			db = find_val_at_t(db_values, t) # Find the databit value at that time
 			bitpos = ck_count % 11
