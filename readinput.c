@@ -2,7 +2,7 @@
 #include <avr/interrupt.h>
 
 #define FOSC 16000000 // Clock Speed
-#define BAUD 1000000
+#define BAUD 1000000 // 1MBd
 #define MYUBRR FOSC/16/BAUD-1
 #define nlines 2 // Number of input lines
 
@@ -54,7 +54,7 @@ unsigned char USART_Receive( void ){
 }
 
 void Input_Init( void ){
-    DDRD =  (1<<DDD5)|(1<<DDD4)|(1<<DDD3)|(1<<DDD2)|(1<<DDD1)|(1<<DDD0); // Define input pins as NOT 5 to 0
+    DDRD =  (1<<DDD1)|(1<<DDD0); // Define input pins as NOT 5 to 0
 
     inputpins[0] = PD6;
     inputpins[1] = PD7;
@@ -67,6 +67,7 @@ void Interrupt_Init(){
     PCMSK2 = 255;               // Set interrupt on all D port 
     PCMSK2 &= ~_BV(PCINT16);    // Disable interrupt on pin 0 (Rx)  
     PCMSK2 &= ~_BV(PCINT17);    // Disable interrupt on pin 1 (Tx)
+
 }
 
 void Timer_init(){
