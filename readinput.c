@@ -71,7 +71,7 @@ void Interrupt_Init(){
 }
 
 void Timer_init(){
-    //Timer interrupt every 10000ms
+    //Timer interrupt every 10ms
     OCR1A = 20000;
     TIMSK1 |= _BV(OCIE1A);
     //Set interrupt on compare match
